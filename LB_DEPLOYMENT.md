@@ -288,6 +288,7 @@ Apply the updated service:
 ```bash
 kubectl apply -f k8s/web-service-lb.yaml
 ```
+![image](https://hackmd.io/_uploads/HJoy9V7TWe.png)
 
 ## 7. Testing the Load Balancer
 
@@ -303,6 +304,9 @@ done
 
 Replace `10.34.7.115` with your node IP address. You should see responses from different pods.
 
+![image](https://hackmd.io/_uploads/rJz44BXpZe.png)
+
+
 ## 8. Access the Application
 
 You can now access your application through the Ingress controller:
@@ -310,6 +314,8 @@ You can now access your application through the Ingress controller:
 ```
 http://10.34.7.115:30081
 ```
+![image](https://hackmd.io/_uploads/S1B1Br76-l.png)
+
 
 ## 9. Visualizing Load Balancing
 
@@ -333,6 +339,7 @@ fetch('/server-info')
     document.body.appendChild(serverInfoDiv);
   });
 ```
+![image](https://hackmd.io/_uploads/HyDoLS7pbl.png)
 
 ## 10. Advanced Load Balancing Configuration
 
@@ -346,7 +353,7 @@ If you need user sessions to stick to the same pod:
 kubectl annotate ingress login-app-ingress nginx.ingress.kubernetes.io/affinity="cookie"
 kubectl annotate ingress login-app-ingress nginx.ingress.kubernetes.io/session-cookie-name="SERVERID"
 ```
-
+![image](https://hackmd.io/_uploads/BJlLDrmpZg.png)
 ### Traffic Weighting
 
 To direct different percentages of traffic to different versions of your application:
@@ -362,28 +369,5 @@ kubectl apply -f k8s/web-service-v2.yaml
 kubectl apply -f k8s/weighted-ingress.yaml
 ```
 
-## 11. Troubleshooting
-
-If you encounter issues:
-
-```bash
-# Check ingress controller pods
-kubectl get pods -n ingress-nginx
-
-# Check ingress controller logs
-kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
-
-# Check if ingress is properly configured
-kubectl describe ingress login-app-ingress
-
-# Check endpoints for the service
-kubectl get endpoints login-app
-
-#Database error: Restart the web application deployment
-kubectl rollout restart deployment login-app
-
-# Restart MySQL deployment
-kubectl rollout restart deployment mysql
-
-This completes the setup of load balancing for the login web application.
-```
+![image](https://hackmd.io/_uploads/By9cOSm6Wx.png)
+![image](https://hackmd.io/_uploads/SyqA_HXT-x.png)
