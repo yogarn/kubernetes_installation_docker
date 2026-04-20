@@ -197,11 +197,17 @@ docker save login-app:latest > login-app.tar
 # On worker nodes: docker load < login-app.tar
 ```
 
+![image](https://hackmd.io/_uploads/rJH_ZH7a-l.png)
+![image](https://hackmd.io/_uploads/SJnYZB7a-l.png)
+
+
 ## 3. Apply the Updated Web Deployment
 
 ```bash
 kubectl apply -f k8s/web-deployment-lb.yaml
 ```
+![Screenshot 2026-04-20 114817](https://hackmd.io/_uploads/S162WHQT-e.png)
+
 
 ## 4. Create an Nginx Ingress Controller for Advanced Load Balancing
 
@@ -222,6 +228,8 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
 ```
 
 Replace `<your-worker-node-name>` with the name of your worker node (run `kubectl get nodes` to find it).
+
+![Screenshot 2026-04-20 115045](https://hackmd.io/_uploads/HkqyfH7pZe.png)
 
 ## 5. Create Ingress Resource for the Application
 
@@ -254,6 +262,7 @@ Apply the ingress resource:
 ```bash
 kubectl apply -f k8s/login-app-ingress.yaml
 ```
+![Screenshot 2026-04-20 115229](https://hackmd.io/_uploads/BJabMBmaZg.png)
 
 ## 6. Update Service to Work with Ingress
 
