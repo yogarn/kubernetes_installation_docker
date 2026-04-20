@@ -1,4 +1,9 @@
 ﻿# Kubernetes Installation on Ubuntu 22.04/24.04
+Group Members:
+1. Yoga Raditya Nala (235150201111020)
+2. Vincentia Melody Vivianne (235150201111047)
+3. Izzah Faiq Putri Madani (235150201111039)
+
 
 Get the detailed information about the installation from the below-mentioned websites of **Docker** and **Kubernetes**.
 
@@ -26,6 +31,9 @@ gpg --no-default-keyring --keyring ./docker.gpg --export > ./docker-archive-keyr
 sudo mv ./docker-archive-keyring.gpg /etc/apt/trusted.gpg.d/
 ```
 
+![image](https://hackmd.io/_uploads/r14F47Chbe.png)
+![image](https://hackmd.io/_uploads/ry_o4mC3be.png)
+
 > Add the docker repository and install docker
 
 ```bash
@@ -37,6 +45,9 @@ sudo apt install git wget curl socat -y
 sudo apt install -y docker-ce
 
 ```
+
+![image](https://hackmd.io/_uploads/Sk8eBQChWx.png)
+![image](https://hackmd.io/_uploads/r1ieSQ0nWx.png)
 
 **To install cri-dockerd for Docker support**
 
@@ -72,6 +83,9 @@ sudo systemctl enable --now cri-docker.socket
 
 ```
 
+![image](https://hackmd.io/_uploads/Skp-LmC3Wg.png)
+![image](https://hackmd.io/_uploads/BkV9LXAn-g.png)
+
 > Add the GPG key for kubernetes
 
 ```bash
@@ -91,12 +105,18 @@ echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
 sudo apt-get update
 ```
 
+![image](https://hackmd.io/_uploads/BJFhL7AnZg.png)
+![image](https://hackmd.io/_uploads/BkzALm03Zg.png)
+
 > Install  Kubernetes packages.
 
 ```bash
 # Use the same versions to avoid issues with the installation.
 sudo apt-get install -y kubelet kubeadm kubectl
 ```
+
+![image](https://hackmd.io/_uploads/rkfgwQR3bl.png)
+![image](https://hackmd.io/_uploads/Hy8DPQCnbl.png)
 
 > To hold the versions so that the versions will not get accidently upgraded.
 
@@ -125,6 +145,10 @@ EOF
 # Apply sysctl params without reboot
 sudo sysctl --system
 ```
+
+![image](https://hackmd.io/_uploads/rJxcP702bl.png)
+![image](https://hackmd.io/_uploads/rJxcP702bl.png)
+
 ### Disable SWAP
 > Disable swap on controlplane and dataplane nodes
 
@@ -136,6 +160,9 @@ sudo swapoff -a
 sudo vim /etc/fstab
 # comment the line which starts with **swap.img**.
 ```
+
+![image](https://hackmd.io/_uploads/S1Zu_QC3Ze.png)
+![image](https://hackmd.io/_uploads/HkZEOX0nWg.png)
 
 ### On the Control Plane server (Master node)
 
