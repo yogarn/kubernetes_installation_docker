@@ -173,16 +173,19 @@ sudo vim /etc/fstab
 ```bash
 # Calico network
 # Make sure to copy the join command
-sudo kubeadm init --apiserver-advertise-address=<control_plane_ip> --cri-socket unix:///var/run/cri-dockerd.sock  --pod-network-cidr=192.168.0.0/16
-
-# Or Use below command if the node network is not 192.168.x.x
-sudo kubeadm init --apiserver-advertise-address=<control_plane_ip> --cri-socket unix:///var/run/cri-dockerd.sock  --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init \
+  --apiserver-advertise-address=192.168.122.213 \
+  --cri-socket unix:///var/run/cri-dockerd.sock \
+  --pod-network-cidr=10.244.0.0/16
 
 # Copy your join command and keep it safe.
 # Below is a sample format
 # Add --cri-socket /var/run/cri-dockerd.sock to the command
-kubeadm join <control_plane_ip>:6443 --token 31rvbl.znk703hbelja7qbx --cri-socket unix:///var/run/cri-dockerd.sock --discovery-token-ca-cert-hash sha256:3dd5f401d1c86be4axxxxxxxxxx61ce965f5xxxxxxxxxxf16cb29a89b96c97dd
+kubeadm join 192.168.122.213:6443 --token ssn143.ie9xv91h4i6hqc9k --cri-socket unix:///var/run/cri-dockerd.sock --discovery-token-ca-cert-hash sha256:46d035479a2c8e558ba0ba04fa1c8415470da4141cf3e129b45b2177e8d0cd6b 
 ```
+
+![image](https://hackmd.io/_uploads/H1jP2gJ6Ze.png)
+![image](https://hackmd.io/_uploads/rJprax1aZg.png)
 
 > To start using the cluster with current user.
 
@@ -191,6 +194,8 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
+
+![image](https://hackmd.io/_uploads/SJ0u6eJa-e.png)
 
 > To set up the Calico network
 
@@ -202,8 +207,12 @@ curl https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/cu
 
 # Change the ip to 10.244.0.0/16 if the node network is 192.168.x.x
 kubectl create -f custom-resources.yaml
-
 ```
+
+![image](https://hackmd.io/_uploads/SJEjTgyabl.png)
+![image](https://hackmd.io/_uploads/Sy6A6x1pbx.png)
+![image](https://hackmd.io/_uploads/SyVlRxJpbl.png)
+
 
 > Check the nodes
 
@@ -211,6 +220,8 @@ kubectl create -f custom-resources.yaml
 # Check the status on the master node.
 kubectl get nodes
 ```
+
+![image](https://hackmd.io/_uploads/rkn07ZyTZl.png)
 
 ### On each of Data plane node (Worker node)
 
@@ -224,6 +235,8 @@ sudo kubeadm join $controller_private_ip:6443 --token $token --discovery-token-c
 # kubeadm join <control_plane_ip>:6443 --cri-socket unix:///var/run/cri-dockerd.sock --token 31rvbl.znk703hbelja7qbx --discovery-token-ca-cert-hash sha256:3dd5f401d1c86be4axxxxxxxxxx61ce965f5xxxxxxxxxxf16cb29a89b96c97dd
 # sudo kubeadm join 10.34.7.115:6443 --cri-socket unix:///var/run/cri-dockerd.sock --token kwdszg.aze47y44h7j74x6t --discovery-token-ca-cert-hash sha256:3bd51b39b3a166a4ba5914fc3a19b61cfe81789965da6ac23435edb6aeed9e0d
 ```
+
+![image](https://hackmd.io/_uploads/rJprax1aZg.png)
 
 **TIP**
 
@@ -243,6 +256,8 @@ cd
 rm -rf kubernetes_installation_docker/
 ```
 
+![image](https://hackmd.io/_uploads/B15BS7Ja-l.png)
+
 ### Installing Dashboard (Master node)
 
 1. *Installing Helm:*
@@ -253,33 +268,46 @@ Download and install Helm with the following commands:
      ./get_helm.sh
      helm   
 ```
+
+![image](https://hackmd.io/_uploads/BJ9KHQy6Ze.png)
+
 3. *Adding the Kubernetes Dashboard Helm Repository:*
 Add the repository and verify it:
 ```bash   
      helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
      helm repo list    
 ```
+
+![image](https://hackmd.io/_uploads/Hyw3wQk6We.png)
+
 5. *Installing Kubernetes Dashboard Using Helm:*
 Install it in the `kubernetes-dashboard` namespace:
 ```bash     
-     helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
-     kubectl get pods,svc -n kubernetes-dashboard  
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+kubectl get pods,svc -n kubernetes-dashboard  
 ```
+
+![image](https://hackmd.io/_uploads/B1eKbu71TWx.png)
+
 7. *Accessing the Dashboard:*
 Expose the dashboard using a NodePort:
 ```bash      
-     kubectl expose deployment kubernetes-dashboard-kong --name k8s-dash-svc --type NodePort --port 443 --target-port 8443 -n kubernetes-dashboard
+kubectl expose deployment kubernetes-dashboard-kong --name k8s-dash-svc --type NodePort --port 443 --target-port 8443 -n kubernetes-dashboard
 ```
-run: kubectl get pods,svc -n kubernetes-dashboard
+run: 
+```
+kubectl get pods,svc -n kubernetes-dashboard
+```
 use this port to access the dashboard from phy node IP: 
 ....
 service/k8s-dash-svc                           NodePort    10.110.85.135   <none>        443:30346/TCP   23s
 
+![image](https://hackmd.io/_uploads/SJpadQypZl.png)
 
 9. *Generating a Token for Login:*
 Create a service account and generate a token:
 ```bash
-   nano k8s-dash.yaml
+nano k8s-dash.yaml
 ```
 
 ```bash
@@ -306,7 +334,11 @@ then run:
 ```bash
 kubectl apply -f k8s-dash.yaml
 ```
+
+![image](https://hackmd.io/_uploads/ryxyqQJ6Wx.png)
+![image](https://hackmd.io/_uploads/SkOWc7kpWl.png)
+
 10. Generate the token:    
      kubectl create token widhi -n kube-system
 
-
+![image](https://hackmd.io/_uploads/rkmEcmyaWe.png)
