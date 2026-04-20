@@ -28,6 +28,7 @@ kubectl get deployment metrics-server -n kube-system
 kubectl top nodes
 kubectl top pods -A
 ```
+![image](https://hackmd.io/_uploads/HyZu81fp-e.png)
 
 ## Setting Up Prometheus and Grafana
 
@@ -54,6 +55,9 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
 kubectl get pods -n monitoring
 kubectl get svc -n monitoring
 ```
+![image](https://hackmd.io/_uploads/BkuyPJfa-l.png)
+![image](https://hackmd.io/_uploads/Skihjkfa-l.png)
+
 
 ### Verify Prometheus Components
 
@@ -70,6 +74,8 @@ kubectl get pods -n monitoring | grep grafana
 # Get Grafana service details
 kubectl get svc -n monitoring prometheus-grafana
 ```
+![image](https://hackmd.io/_uploads/r106jyfTbg.png)
+
 
 ## Accessing and Configuring Grafana
 
@@ -84,7 +90,11 @@ echo "Access Grafana at http://<your-node-ip>:$GRAFANA_PORT"
 # Username: admin
 # Password: admin (or the password you set in the Helm installation)
 ```
+    
+![image](https://hackmd.io/_uploads/BkvuDyMaWl.png)
+![image](https://hackmd.io/_uploads/BJWu21fTbg.png)
 
+    
 ## Instrumenting Your Application
 
 To get custom metrics from your Node.js application, add Prometheus instrumentation:
@@ -116,6 +126,15 @@ app.use(metricsMiddleware);
 
 // Your metrics will be available at the /metrics endpoint
 ```
+    
+![image](https://hackmd.io/_uploads/B1imC1fTWe.png)
+![image](https://hackmd.io/_uploads/H1Zu0Jz6-x.png)
+![image](https://hackmd.io/_uploads/HyeRA1MT-l.png)
+![image](https://hackmd.io/_uploads/HkQW1lM6We.png)
+![image](https://hackmd.io/_uploads/S1pVklMTWx.png)
+![image](https://hackmd.io/_uploads/rJ_yegMabl.png)
+![image](https://hackmd.io/_uploads/rkdulefpZg.png)
+
 
 ### ServiceMonitor for Your Applications
 
@@ -137,12 +156,15 @@ spec:
     matchNames:
     - default  # Namespace where your app is running
 ```
+![image](https://hackmd.io/_uploads/B1VB-eMTZe.png)
+![image](https://hackmd.io/_uploads/ByRIWgGp-g.png)
 
 Apply this configuration:
 
 ```bash
 kubectl apply -f login-app-monitor.yaml
 ```
+![image](https://hackmd.io/_uploads/BJu_Wgzpbg.png)
 
 ## Creating Custom Dashboards
 
@@ -156,30 +178,48 @@ kubectl apply -f login-app-monitor.yaml
    - 8588 (Kubernetes Deployment)
    - 11663 (Kubernetes Pod Monitoring)
 
+    ![image](https://hackmd.io/_uploads/ByIDVlGpbl.png)
+    ![image](https://hackmd.io/_uploads/HJbbHlfpbx.png)
+    ![image](https://hackmd.io/_uploads/SyGpCgzpWg.png)
+
+
 ### Create Network Metrics Dashboard
 
 In Grafana:
 
 1. Create a new dashboard
+    
+![image](https://hackmd.io/_uploads/S1kkJ-GpZl.png)
+
 2. Add a panel for Network Received:
    ```
    sum(rate(container_network_receive_bytes_total{namespace="default",pod=~"login-app.*"}[5m])) by (pod)
    ```
+
+![image](https://hackmd.io/_uploads/BkwKfZf6be.png)
+
 
 3. Add a panel for Network Transmitted:
    ```
    sum(rate(container_network_transmit_bytes_total{namespace="default",pod=~"login-app.*"}[5m])) by (pod)
    ```
 
+![image](https://hackmd.io/_uploads/SJU6f-GTZx.png)
+
+    
 4. Add a panel for CPU Usage:
    ```
    sum(rate(container_cpu_usage_seconds_total{namespace="default",pod=~"login-app.*"}[5m])) by (pod)
    ```
+![image](https://hackmd.io/_uploads/SJvmQ-GaWx.png)
 
 5. Add a panel for Memory Usage:
    ```
    sum(container_memory_working_set_bytes{namespace="default",pod=~"login-app.*"}) by (pod)
    ```
+![image](https://hackmd.io/_uploads/HyfBXWGabx.png)
+
+![image](https://hackmd.io/_uploads/Sk8dXWzpZg.png)
 
 ## Setting Up Horizontal Pod Autoscaler (HPA)
 
@@ -211,12 +251,14 @@ spec:
         type: Utilization
         averageUtilization: 70
 ```
+![image](https://hackmd.io/_uploads/HJy1VbfaZe.png)
 
 Apply this configuration:
 
 ```bash
 kubectl apply -f cpu-hpa.yaml
 ```
+![image](https://hackmd.io/_uploads/r1e1xV-Ga-g.png)
 
 ### Custom Metrics HPA (Network-based)
 
@@ -243,6 +285,7 @@ rules:
     metricsQuery: 'sum(rate(<<.Series>>{<<.LabelMatchers>>}[5m])) by (<<.GroupBy>>)'
 EOF
 ```
+![image](https://hackmd.io/_uploads/BJwW4-fTbx.png)
 
 Create network-based HPA:
 
@@ -267,12 +310,14 @@ spec:
         type: AverageValue
         averageValue: 1000000  # 1MB/s
 ```
+![image](https://hackmd.io/_uploads/SyF34Zf6Wg.png)
 
 Apply this configuration:
 
 ```bash
 kubectl apply -f network-hpa.yaml
 ```
+![image](https://hackmd.io/_uploads/BkuTVWM6-x.png)
 
 ## Load Testing for Autoscaling
 
@@ -291,6 +336,13 @@ kubectl get hpa -w
 # Monitor pods scaling up/down
 kubectl get pods -w
 ```
+![image](https://hackmd.io/_uploads/ryicv-fa-g.png)
+![image](https://hackmd.io/_uploads/H1l2DZfaWe.png)
+
+![image](https://hackmd.io/_uploads/S10FrZzpbx.png)
+
+![image](https://hackmd.io/_uploads/HyNxdWM6Wl.png)
+![image](https://hackmd.io/_uploads/SyxJO-Gp-l.png)
 
 ## Monitoring Autoscaling
 
@@ -304,6 +356,8 @@ kubectl describe hpa login-app-hpa
 # Check current metric values
 kubectl get --raw "/apis/metrics.k8s.io/v1beta1/namespaces/default/pods" | jq .
 ```
+![image](https://hackmd.io/_uploads/HkGI5ZM6-g.png)
+![image](https://hackmd.io/_uploads/SknLc-za-e.png)
 
 ## Troubleshooting
 
